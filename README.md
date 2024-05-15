@@ -11,8 +11,6 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 
 ## Requirements
 
-## Requirements
-
 1. **Install Visual Studio 2022 and MASM**:
    - **Download and Install Visual Studio 2022**:
      - Go to the [Visual Studio 2022 download page](https://visualstudio.microsoft.com/vs/).
@@ -44,7 +42,7 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
     Follow the steps in the "Requirements" section above to download and install all the necessary tools.
 
 2. **Clone or Download the Template**:
-    Clone the repository or download the template as a ZIP file and extract it to your desired project location.
+    Click the green "Use this Template" button on the top right of this page. Alternatively, you can clone the repository or download the template as a ZIP file and extract it to your desired project location.
 
 3. **Open in Visual Studio Code**:
     Open the project folder in Visual Studio Code.
