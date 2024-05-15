@@ -11,44 +11,49 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 
 ## Requirements
 
-- **MASM Assembler**: MASM is installed with the Visual Studio IDE. Ensure that the MASM directory is added to your environment variables. Typically, the directory is located at: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\ **{YOUR VS VERSION HERE}}** \bin\Hostx86\x86"
+## Requirements
 
-- **Visual Studio Code**: Download and install [Visual Studio Code](https://code.visualstudio.com/).
-- **ASM Code Lens Extension**: For unparalleled syntax highlighting, download and install the [ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens) extension from the VS Code Marketplace.
-- **NOTE:** Users should add both x86 and x64 bit versions of any dependencies.
+1. **Install Visual Studio 2022 and MASM**:
+   - **Download and Install Visual Studio 2022**:
+     - Go to the [Visual Studio 2022 download page](https://visualstudio.microsoft.com/vs/).
+     - Download the installer and follow the installation instructions.
+   - **Install MASM**:
+     - During the Visual Studio installation, select the "Desktop development with C++" workload.
+     - Ensure the "MSVC v142 - VS 2019 C++ x64/x86 build tools" component is selected.
+   - **Set Up Environment Variables**:
+     - After installation, add the MASM directory to your environment variables. Typically, the directory is located somewhere like:
+       ```
+       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx86\x86
+       ```
+     - In the path above, "2022" is the year of Visual Studio and "14.29.30133" would be the current version of the IDE. They may be slightly different for you as it depends on your current install.
+     - IMPORTANT: You should add both the x86 "Hostx86\x86" and x64 "Hostx64\x64" folders to your Environment variables to prevent issues.
 
+2. **Visual Studio Code**:
+   - Download and install [Visual Studio Code](https://code.visualstudio.com/). This is what you will be writing your actual code in.
 
-## Getting Started
-
-1. **Clone or Download the Template**:
-    Clone the repository or download the template as a ZIP file and extract it to your desired project location.
-
-2. **Open in Visual Studio Code**:
-    Open the project folder in Visual Studio Code.
-
-3. **Set Up Environment Variables**:
-    Add the MASM directory to your environment variables. This allows VS Code to access the MASM tools.
-
-4. **Change VS Code Settings**:
+3. **Change VS Code Settings**:
     Go to `File` > `Preferences` > `Settings`.
     Search for `debug.AllowBreakpointsEverywhere` and set it to `true`. This allows you to place breakpoints in your assembly code.
 
-5. **Build the Project**:
+4. **ASM Code Lens Extension**:
+   - For unparalleled syntax highlighting, download and install the [ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens) extension from the VS Code Marketplace.
+
+## Getting Started
+
+1. **Install the Necessary Requirements**:
+    Follow the steps in the "Requirements" section above to download and install all the necessary tools.
+
+2. **Clone or Download the Template**:
+    Clone the repository or download the template as a ZIP file and extract it to your desired project location.
+
+3. **Open in Visual Studio Code**:
+    Open the project folder in Visual Studio Code.
+
+4. **Build the Project**:
     Use the build shortcut (default `Ctrl+Shift+B`) to assemble and link your project.
 
-6. **Debug and Run the Project**:
+5. **Debug and Run the Project**:
     Press F5 to start debugging. You can set breakpoints, step through code, and inspect registers.
-
-## Project Structure
-
-AssemblyProjectTemplate/
-├── .vscode/
-│ ├── launch.json # Debug configuration
-│ └── tasks.json # Build tasks configuration
-├── build/ # Build output directory
-├── src/
-│ └── main.asm # Sample assembly source file
-└── README.md # Project documentation
 
 
 ## Configuration Files
@@ -58,7 +63,7 @@ AssemblyProjectTemplate/
 
 ## Example Code
 
-Here’s a sample of what your `main.asm` might look like:
+Here’s a sample of what your `main.asm` will look like:
 
 ```assembly
 ; Program Configuration
@@ -73,7 +78,6 @@ Here’s a sample of what your `main.asm` might look like:
 .code                   
 main PROC
     nop ; Code start
-    push ecx
 
     nop ; Code end
     ret
