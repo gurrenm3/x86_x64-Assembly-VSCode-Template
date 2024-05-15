@@ -1,5 +1,9 @@
 {
     "files.exclude": {
-        "build": true
+        ".git": true,
+        "build": true,
+        "*README.md": true,
+        "*LICENSE": true,
+        "*.gitattributes": true
     }
 }
