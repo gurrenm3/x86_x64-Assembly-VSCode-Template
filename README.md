@@ -47,10 +47,25 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 3. **Open in Visual Studio Code**:
     Open the project folder in Visual Studio Code.
 
-4. **Build the Project**:
+4. **Open in Visual Studio Code**:
+    Open the `.vscode\tasks.json` file. Change the following paths to match the ones on your system. This will let your code build with the correct dependencies.
+    
+    - In the `Assemble` task:
+    ```
+    "/I", "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/include", // change this to match the path on your system.
+    "/I", "C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um", // change this to match the path on your system.
+    ```
+    - In the `Link` task:
+    ```
+    "/LIBPATH:C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/lib/x86", // change this to match the path on your system.
+    "/LIBPATH:C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x86", // change this to match the path on your system.
+    ```
+    - NOTE: If you have problems building make sure these paths are correct.
+
+5. **Build the Project**:
     Use the build shortcut (default `Ctrl+Shift+B`) to assemble and link your project.
 
-5. **Debug and Run the Project**:
+6. **Debug and Run the Project**:
     Press F5 to start debugging. You can set breakpoints, step through code, and inspect registers.
 
 
@@ -64,23 +79,32 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 Here’s a sample of what your `main.asm` will look like:
 
 ```assembly
-; Program Configuration
-.386
-.model flat, stdcall
-.stack 4096
-
-; Data segment
-.data
-
-; Code segment
 .code                   
-main PROC
-    nop ; Code start
+	MainEntryPoint PROC 								      ; Start of main procedure - Entry point of the program
 
-    nop ; Code end
-    ret
-main ENDP
-END main
+		; Your code here
+		; Below is an example of asking the user for input and printing it back to them.
+
+		; Ask the user to enter some text.
+		push offset strPrompt							      ; Push the address of the question onto the stack.
+		call printf										          ; Print question to console.
+		add esp, 4										          ; Clean up the "strPrompt" argument from the stack (for cdecl).
+
+    ; Get the user's response.
+    push offset strUserInput    					  ; Push the address of the input buffer string.
+    call gets                  						  ; Get the user's input, storing it in the input string.
+    add esp, 4                 						  ; Clean up the "strUserInput" argument from the stack (for cdecl).
+
+    ; Print back what the user typed in a formatted message.
+		push offset strUserInput						    ; Push the address of the user's input onto the stack.
+		push offset strOutputFormat						  ; Push formatted output string onto the stack.
+		call printf										          ; Print response back to user.
+		add esp, 8										          ; Clean up the "strUserInput" and "strOutputFormat" arguments from the stack (for cdecl).
+		
+		INVOKE ExitProcess, 0 							    ; Exit program
+	MainEntryPoint ENDP 								      ; End of main procedure
+
+END MainEntryPoint 										      ; End of program, specify the entry point
 ```
 
 Troubleshooting

@@ -9,6 +9,8 @@
                 "/c",
                 "/Zd",
                 "/coff",
+                "/I", "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/include", // change this to match the path on your system.
+                "/I", "C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um", // change this to match the path on your system.
                 "/Fo", "${workspaceFolder}/build/main.obj",
                 "${workspaceFolder}/src/main.asm"
             ],
@@ -27,11 +29,15 @@
             "type": "shell",
             "command": "link.exe",
             "args": [
+                //"/VERBOSE", // uncomment this to have detailed output messages. Useful if the program is having trouble building.
                 "/DEBUG",
                 "/SUBSYSTEM:CONSOLE",
-                "/ENTRY:main@0",
+                "/ENTRY:MainEntryPoint@0",
                 "/OUT:build/main.exe",
-                "build/main.obj"
+                "build/main.obj",
+                "/LIBPATH:C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/lib/x86", // change this to match the path on your system.
+                "/LIBPATH:C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x86", // change this to match the path on your system.
+                "/SAFESEH:NO",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

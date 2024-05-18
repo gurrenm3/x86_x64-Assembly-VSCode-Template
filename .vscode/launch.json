@@ -9,7 +9,7 @@
         "args": [],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}/build",
-        "console": "integratedTerminal",
+        "console": "integratedTerminal", // options: integratedTerminal (VS Code Terminal), internalTerminal (reuse same console window), externalTerminal (new console window each time)
         "symbolSearchPath": "srv*c:\\symbols*http://msdl.microsoft.com/download/symbols",
         "preLaunchTask": "Link"
       }
