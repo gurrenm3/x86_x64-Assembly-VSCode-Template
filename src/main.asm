@@ -48,10 +48,10 @@ gets PROTO C, :VARARG ; Declares the "gets" function from the C Standard Library
 ; DATA SEGMENT - Reserved space for data used in the program.
 ; =============================================================================
 .data
-        ; Define any necessary data here, e.g., strings or constants.
-        strPrompt db "Please enter some text: ", 0          ; String prompt to ask the user to enter some text.
-        strUserInput db 256 dup(0)                          ; Buffer to store the input string
-        strOutputFormat db "You entered: %s", 0Ah, 0        ; Formatted output message to print result back to the user.
+    ; Define any necessary data here, e.g., strings or constants.
+    strPrompt db "Please enter some text: ", 0              ; String prompt to ask the user to enter some text.
+    strUserInput db 256 dup(0)                              ; Buffer to store the input string
+    strOutputFormat db "You entered: %s", 0Ah, 0            ; Formatted output message to print result back to the user.
 
 ; =============================================================================
 ; CODE SEGMENT - Contains the actual code (instructions) of the program.
