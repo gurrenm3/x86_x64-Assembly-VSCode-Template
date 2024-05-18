@@ -80,31 +80,31 @@ Here’s a sample of what your `main.asm` will look like:
 
 ```assembly
 .code                   
-	MainEntryPoint PROC 								      ; Start of main procedure - Entry point of the program
+    MainEntryPoint PROC                                 ; Start of main procedure - Entry point of the program
 
-		; Your code here
-		; Below is an example of asking the user for input and printing it back to them.
+        ; Your code here
+        ; Below is an example of asking the user for input and printing it back to them.
 
-		; Ask the user to enter some text.
-		push offset strPrompt							      ; Push the address of the question onto the stack.
-		call printf										          ; Print question to console.
-		add esp, 4										          ; Clean up the "strPrompt" argument from the stack (for cdecl).
+        ; Ask the user to enter some text.
+        push offset strPrompt                           ; Push the address of the question onto the stack.
+        call printf                                     ; Print question to console.
+        add esp, 4                                      ; Clean up the "strPrompt" argument from the stack (for cdecl).
 
-    ; Get the user's response.
-    push offset strUserInput    					  ; Push the address of the input buffer string.
-    call gets                  						  ; Get the user's input, storing it in the input string.
-    add esp, 4                 						  ; Clean up the "strUserInput" argument from the stack (for cdecl).
+        ; Get the user's response.
+        push offset strUserInput                        ; Push the address of the input buffer string.
+        call gets                                       ; Get the user's input, storing it in the input string.
+        add esp, 4                                      ; Clean up the "strUserInput" argument from the stack (for cdecl).
 
-    ; Print back what the user typed in a formatted message.
-		push offset strUserInput						    ; Push the address of the user's input onto the stack.
-		push offset strOutputFormat						  ; Push formatted output string onto the stack.
-		call printf										          ; Print response back to user.
-		add esp, 8										          ; Clean up the "strUserInput" and "strOutputFormat" arguments from the stack (for cdecl).
-		
-		INVOKE ExitProcess, 0 							    ; Exit program
-	MainEntryPoint ENDP 								      ; End of main procedure
+        ; Print back what the user typed in a formatted message.
+        push offset strUserInput                        ; Push the address of the user's input onto the stack.
+        push offset strOutputFormat                     ; Push formatted output string onto the stack.
+        call printf                                     ; Print response back to user.
+        add esp, 8                                      ; Clean up the "strUserInput" and "strOutputFormat" arguments from the stack (for cdecl).
 
-END MainEntryPoint 										      ; End of program, specify the entry point
+        INVOKE ExitProcess, 0                           ; Exit program
+    MainEntryPoint ENDP                                 ; End of main procedure
+
+END MainEntryPoint                                      ; End of program, specify the entry point
 ```
 
 Troubleshooting
