@@ -15,7 +15,7 @@ includelib legacy_stdio_definitions.lib     ; Used for: printf, gets
 ; =============================================================================
 ; FUNCTION PROTOTYPES - Declaration of external functions used in this program.
 ; =============================================================================
-ExitProcess PROTO, dwExitCode:DWORD ; Terminates the current process and returns an exit code to the operating system.
+ExitProcess PROTO dwExitCode:DWORD ; Terminates the current process and returns an exit code to the operating system.
 ; Parameters:
 ;   dwExitCode : DWORD - The exit code for the process.
 ; Usage:
@@ -34,7 +34,7 @@ printf PROTO C :VARARG ; Declares the "printf" function from the C Standard Libr
 ;     call printf               ; Execute the printf function
 ;     add esp, 8                ; Restore the stack by removing parameters
 
-gets PROTO C, :VARARG ; Declares the "gets" function from the C Standard Library. Retrieves input from the user.
+gets PROTO C :VARARG ; Declares the "gets" function from the C Standard Library. Retrieves input from the user.
 ; Follows the C calling convention which requires the caller to clean up the stack. 
 ; NOTE: This is considered unsafe because it does not check for buffer overflows. Use alternatives like "fgets", "scanf", "ReadConsole", etc in real applications.
 ; Usage:
