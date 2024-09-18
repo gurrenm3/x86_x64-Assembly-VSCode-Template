@@ -1,18 +1,17 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "Debug MASM with CDB",
-        "type": "cppvsdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build/main.exe",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}/build",
-        "console": "integratedTerminal", // options: integratedTerminal (VS Code Terminal), internalTerminal (reuse same console window), externalTerminal (new console window each time)
-        "symbolSearchPath": "srv*c:\\symbols*http://msdl.microsoft.com/download/symbols",
-        "preLaunchTask": "Build Project"
-      }
-    ]
-  }
-  
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug MASM with CDB",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/main.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build",
+      "console": "integratedTerminal", // options: integratedTerminal (VS Code Terminal), internalTerminal (reuse same console window), externalTerminal (new console window each time)
+      "symbolSearchPath": "srv*c:\\symbols*http://msdl.microsoft.com/download/symbols",
+      "preLaunchTask": "Build Project"
+    }
+  ]
+}

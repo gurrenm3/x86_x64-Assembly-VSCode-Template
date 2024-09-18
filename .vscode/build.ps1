@@ -38,10 +38,32 @@ Get-ChildItem -Path 'src' -Filter '*.asm' -Recurse | ForEach-Object {
         '/Fo', "`"$objFile`"",
         "`"$asmFile`""
     )
-    $result = & ml.exe @mlArgs
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Error assembling $asmFile"
+    # Start the process and capture output
+    $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $processInfo.FileName = 'ml.exe'
+    $processInfo.Arguments = [string]::Join(' ', $mlArgs)
+    $processInfo.RedirectStandardOutput = $true
+    $processInfo.RedirectStandardError = $true
+    $processInfo.UseShellExecute = $false
+    $processInfo.CreateNoWindow = $true
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $processInfo
+    $process.Start() | Out-Null
+    $stdout = $process.StandardOutput.ReadToEnd()
+    $stderr = $process.StandardError.ReadToEnd()
+    $process.WaitForExit()
+    if ($process.ExitCode -ne 0) {
+        Write-Host "Error assembling $asmFile" -ForegroundColor Red
+        # Display error messages from stdout or stderr
+        if ($stderr) {
+            Write-Host $stderr -ForegroundColor Red
+        }
+        if ($stdout) {
+            Write-Host $stdout -ForegroundColor Red
+        }
         exit 1
+    } else {
+        Write-Host $stdout
     }
 }
 
@@ -58,10 +80,31 @@ $linkArgs = @(
 ) + $objFiles + $libArgs + @(
     '/SAFESEH:NO'
 )
-$result = & link.exe @linkArgs
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Error linking object files"
+# Start the linker process and capture output
+$processInfo = New-Object System.Diagnostics.ProcessStartInfo
+$processInfo.FileName = 'link.exe'
+$processInfo.Arguments = [string]::Join(' ', $linkArgs)
+$processInfo.RedirectStandardOutput = $true
+$processInfo.RedirectStandardError = $true
+$processInfo.UseShellExecute = $false
+$processInfo.CreateNoWindow = $true
+$process = New-Object System.Diagnostics.Process
+$process.StartInfo = $processInfo
+$process.Start() | Out-Null
+$stdout = $process.StandardOutput.ReadToEnd()
+$stderr = $process.StandardError.ReadToEnd()
+$process.WaitForExit()
+if ($process.ExitCode -ne 0) {
+    Write-Host "Error linking object files" -ForegroundColor Red
+    if ($stderr) {
+        Write-Host $stderr -ForegroundColor Red
+    }
+    if ($stdout) {
+        Write-Host $stdout -ForegroundColor Red
+    }
     exit 1
+} else {
+    Write-Host $stdout
 }
 
 Write-Host "Build successful!"
