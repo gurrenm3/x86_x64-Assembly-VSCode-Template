@@ -4,9 +4,10 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 
 ## Features
 
-- **Build Shortcut**: Quickly build your project using the build shortcut.
+- **Great for Bigger Projects**: Automatically assemble all `.asm` files in the `src` directory and all subdirectories.
 - **Debugging**: Full debugging support using MSVC. Set breakpoints, step through code, and inspect registers.
-- **Execute with F5**: Run your project directly from VS Code using the F5 key.
+- **Build Shortcut**: Quickly build your project using build shortcuts (default `Ctrl+Shift+B`).
+- **Execute with F5**: Run your project directly from VS Code using the `F5` key.
 - **Syntax Highlighting**: Enhanced syntax highlighting with the "ASM Code Lens" extension.
 
 ## Requirements
@@ -47,23 +48,29 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 3. **Open in Visual Studio Code**:
     Open the project folder in Visual Studio Code.
 
-4. **Open in Visual Studio Code**:
-    Open the `.vscode\tasks.json` file. Change the following paths to match the ones on your system. This will let your code build with the correct dependencies.
+4. **Configure Build Paths**:
+    Open the `.vscode\build.ps1` file. Change the include and library paths in the `$includePaths` and `$libPaths` arrays to match the ones on your system. This will let your code build with the correct dependencies.
     
-    - In the `Assemble` task:
+    - In the `$includePaths` array:
     ```
-    "/I", "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/include", // change this to match the path on your system.
-    "/I", "C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um", // change this to match the path on your system.
+    $includePaths = @(
+        'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include',  # Change this to match your system.
+        'C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um'                              # Change this to match your system.
+    )
     ```
-    - In the `Link` task:
+    - In the `$libPaths` array:
     ```
-    "/LIBPATH:C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/lib/x86", // change this to match the path on your system.
-    "/LIBPATH:C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x86", // change this to match the path on your system.
+    $libPaths = @(
+        'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\lib\x86',  # Change this to match your system.
+        'C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\ucrt\x86',                           # Change this to match your system.
+        'C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x86'                              # Change this to match your system.
+    )
+
     ```
-    - NOTE: If you have problems building make sure these paths are correct.
+    - NOTE: If you have problems building, make sure these paths are correct and point to the appropriate include and library directories on your system.
 
 5. **Build the Project**:
-    Use the build shortcut (default `Ctrl+Shift+B`) to assemble and link your project.
+    Use the build shortcut (default `Ctrl+Shift+B`) to assemble and link your project. The build task will execute build.ps1. Alternatively, just press F5 to run the project right away.
 
 6. **Debug and Run the Project**:
     Press F5 to start debugging. You can set breakpoints, step through code, and inspect registers.
@@ -72,7 +79,7 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 ## Configuration Files
 
 - **launch.json**: Configuration for debugging with MSVC.
-- **tasks.json**: Tasks for assembling and linking the project using MASM.
+- **tasks.json**: Contains tasks for building the project, which invoke `build.ps1`.
 
 ## Example Code
 
@@ -122,8 +129,8 @@ END MainEntryPoint                                      ; End of program, specif
 Troubleshooting
 
    - Environment Variables: Ensure that the MASM directory is correctly added to your environment variables.
-   - Dependencies: Make sure all dependencies are correctly installed and their paths are correctly set.
-   - Breakpoints: Ensure debug.AllowBreakpointsEverywhere is set to true in your VS Code settings to place breakpoints in the editor.
+   - Dependencies: Make sure all dependencies are correctly installed and their paths are correctly set in `build.ps1`.
+   - Breakpoints: Ensure `debug.AllowBreakpointsEverywhere` is set to `true` in your VS Code settings to place breakpoints in the editor.
 
 By following these steps and using this template, you can efficiently create and manage your x86 assembly projects in Visual Studio Code.
 
