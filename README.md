@@ -34,7 +34,10 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
     Go to `File` > `Preferences` > `Settings`.
     Search for `debug.AllowBreakpointsEverywhere` and set it to `true`. This allows you to place breakpoints in your assembly code.
 
-4. **ASM Code Lens Extension**:
+4. **C/C++ Debug**:
+   - In order to debug your code in VS Code you will need to download the [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools).
+
+5. **ASM Code Lens Extension**:
    - For unparalleled syntax highlighting, download and install the [ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens) extension from the VS Code Marketplace.
 
 ## Getting Started
@@ -73,7 +76,7 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
     Use the build shortcut (default `Ctrl+Shift+B`) to assemble and link your project. The build task will execute build.ps1. Alternatively, just press F5 to run the project right away.
 
 6. **Debug and Run the Project**:
-    Press F5 to start debugging. You can set breakpoints, step through code, and inspect registers.
+    Press F5 to start debugging. You can set breakpoints, step through code, and inspect registers. If you encounter an error when trying to run, make sure you've set the environment variables, modified the `build.ps1` file, and downloaded the C/C++ extension in VS Code.
 
 
 ## Configuration Files
