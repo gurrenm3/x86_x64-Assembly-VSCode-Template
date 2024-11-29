@@ -7,12 +7,16 @@ $visualStudioDir = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
 $windowsKitsDir = 'C:\Program Files (x86)\Windows Kits\10'
 
 # ================================
-# Host Architecture Configuration
+# Host and Target Architecture Configuration
 # ================================
 
 # Define the host architecture: 'x86' or 'x64'
-# Set this variable based on your target environment
-$hostArch = 'x64'  # Change to 'x86' if targeting a 32-bit environment
+# Set this variable based on your development environment
+$hostArch = 'x64'  # Change to 'x86' if your machine is 32-bit
+
+# Define the target architecture: 'x86' or 'x64'
+# Set this variable based on the architecture you want to build for
+$targetArch = 'x86'  # Change to 'x64' to build 64-bit applications
 
 # Validate the host architecture
 if ($hostArch -ne 'x86' -and $hostArch -ne 'x64') {
@@ -20,8 +24,18 @@ if ($hostArch -ne 'x86' -and $hostArch -ne 'x64') {
     exit 1
 }
 
+# Validate the target architecture
+if ($targetArch -ne 'x86' -and $targetArch -ne 'x64') {
+    Write-Host "Error: Invalid target architecture specified. Please set `\$targetArch` to either 'x86' or 'x64'." -ForegroundColor Red
+    exit 1
+}
+
 # Construct the Host directory based on the host architecture
 $hostDir = "Host$hostArch"
+
+# Map architectures for Visual Studio environment variables
+$vsHostArch = if ($hostArch -eq 'x64') { 'amd64' } else { 'x86' }
+$vsTargetArch = if ($targetArch -eq 'x64') { 'amd64' } else { 'x86' }
 
 # Function to print error and exit
 function Exit-WithError {
@@ -76,11 +90,11 @@ $includePaths = @(
     (Join-Path $windowsKitsDir "Include\$latestWindowsSdkVersion\cppwinrt")
 )
 
-# Set lib paths
+# Set lib paths based on target architecture
 $libPaths = @(
-    (Join-Path $latestMsvcVersionDir 'lib\x86'),
-    (Join-Path $windowsKitsDir "Lib\$latestWindowsSdkVersion\um\x86"),
-    (Join-Path $windowsKitsDir "Lib\$latestWindowsSdkVersion\ucrt\x86")
+    (Join-Path $latestMsvcVersionDir "lib\$targetArch"),
+    (Join-Path $windowsKitsDir "Lib\$latestWindowsSdkVersion\um\$targetArch"),
+    (Join-Path $windowsKitsDir "Lib\$latestWindowsSdkVersion\ucrt\$targetArch")
 )
 
 # ============================
@@ -107,26 +121,18 @@ foreach ($path in $includePaths + $libPaths) {
 # Locate ml.exe and link.exe
 # ======================
 
-# Define the Host directory based on host architecture
-$mlExePathCandidates = @(
-    (Join-Path $latestMsvcVersionDir "bin\$hostDir\x86\ml.exe"),
-    (Join-Path $latestMsvcVersionDir "bin\$hostDir\x86\ml.exe")
-)
+# Determine the assembler executable based on target architecture
+$mlExeName = if ($targetArch -eq 'x86') { 'ml.exe' } else { 'ml64.exe' }
+$mlExePath = Join-Path $latestMsvcVersionDir "bin\$hostDir\$targetArch\$mlExeName"
 
-$mlExePath = $mlExePathCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-if (!$mlExePath) {
-    Exit-WithError "Error: ml.exe not found in expected locations."
+if (!(Test-Path $mlExePath)) {
+    Exit-WithError "Error: $mlExeName not found at $mlExePath"
 }
-Write-Host "Found ml.exe at: $mlExePath"
+Write-Host "Found $mlExeName at: $mlExePath"
 
-$linkExePathCandidates = @(
-    (Join-Path $latestMsvcVersionDir "bin\$hostDir\x86\link.exe"),
-    (Join-Path $latestMsvcVersionDir "bin\$hostDir\x86\link.exe")
-)
-
-$linkExePath = $linkExePathCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-if (!$linkExePath) {
-    Exit-WithError "Error: link.exe not found in expected locations."
+$linkExePath = Join-Path $latestMsvcVersionDir "bin\$hostDir\$targetArch\link.exe"
+if (!(Test-Path $linkExePath)) {
+    Exit-WithError "Error: link.exe not found at $linkExePath"
 }
 Write-Host "Found link.exe at: $linkExePath"
 
@@ -138,8 +144,8 @@ $vcVarsAllBat = Join-Path $visualStudioDir 'VC\Auxiliary\Build\vcvarsall.bat'
 if (!(Test-Path $vcVarsAllBat)) {
     Exit-WithError "Error: vcvarsall.bat not found at $vcVarsAllBat"
 }
-Write-Host "Initializing Visual Studio environment for host architecture '$hostArch'..."
-& "$vcVarsAllBat" $hostArch
+Write-Host "Initializing Visual Studio environment for host architecture '$vsHostArch' and target architecture '$vsTargetArch'..."
+& "$vcVarsAllBat" $vsHostArch $vsTargetArch
 Write-Host "Environment initialized."
 
 # =====================
@@ -166,19 +172,27 @@ Get-ChildItem -Path 'src' -Filter '*.asm' -Recurse | ForEach-Object {
         New-Item -ItemType Directory -Path $objDir -Force | Out-Null
     }
     
-    # Removed the script's own "Assembling" message to prevent duplication
-    # Write-Host "Assembling $asmFile..."
-    
-    # Assemble the .asm file using ml.exe
+    # Assemble the .asm file using ml.exe or ml64.exe
     $includeArgs = $includePaths | ForEach-Object { "/I`"$($_)`"" }
-    $mlArgs = @(
-        '/c',
-        '/Zd',
-        '/coff'
-    ) + $includeArgs + @(
-        '/Fo', "`"$objFile`"",
-        "`"$asmFile`""
-    )
+    
+    if ($targetArch -eq 'x86') {
+        $mlArgs = @(
+            '/c',
+            '/Zd',
+            '/coff'
+        ) + $includeArgs + @(
+            '/Fo', "`"$objFile`"",
+            "`"$asmFile`""
+        )
+    } else {
+        $mlArgs = @(
+            '/c',
+            '/Zi'
+        ) + $includeArgs + @(
+            '/Fo', "`"$objFile`"",
+            "`"$asmFile`""
+        )
+    }
     
     # Start the process and capture output
     $processInfo = New-Object System.Diagnostics.ProcessStartInfo
@@ -217,14 +231,28 @@ Write-Host "Linking object files..."
 # Collect all .obj files from build directory and subdirectories
 $objFiles = Get-ChildItem -Path 'build' -Filter '*.obj' -Recurse | ForEach-Object { "`"$($_.FullName)`"" }
 $libArgs = $libPaths | ForEach-Object { "/LIBPATH:`"$($_)`"" }
-$linkArgs = @(
-    '/DEBUG',
-    '/SUBSYSTEM:CONSOLE',
-    '/ENTRY:MainEntryPoint@0',
-    '/OUT:build\main.exe'
-) + $objFiles + $libArgs + @(
-    '/SAFESEH:NO'
-)
+
+# Set the entry point based on target architecture
+$entryPoint = if ($targetArch -eq 'x86') { 'MainEntryPoint@0' } else { 'MainEntryPoint' }
+
+if ($targetArch -eq 'x86') {
+    $linkArgs = @(
+        '/DEBUG',
+        '/SUBSYSTEM:CONSOLE',
+        "/ENTRY:$entryPoint",
+        '/OUT:build\main.exe'
+    ) + $objFiles + $libArgs + @(
+        '/SAFESEH:NO'
+    )
+} else {
+    $linkArgs = @(
+        '/DEBUG',
+        '/SUBSYSTEM:CONSOLE',
+        "/ENTRY:$entryPoint",
+        '/OUT:build\main.exe'
+    ) + $objFiles + $libArgs
+}
+
 # Start the linker process and capture output
 $processInfo = New-Object System.Diagnostics.ProcessStartInfo
 $processInfo.FileName = $linkExePath
