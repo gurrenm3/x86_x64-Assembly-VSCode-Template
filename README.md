@@ -1,9 +1,10 @@
-# x86 Assembly Project Template
+# x86/x64 Assembly Project Template
 
-This is a template for creating x86 assembly projects using the MASM assembler. It is configured for use with Visual Studio Code and supports building, executing, and debugging your assembly code with ease.
+This is a template for creating **x86 and x64 assembly projects** using the MASM assembler. It is configured for use with Visual Studio Code and supports building, executing, and debugging your assembly code with ease.
 
 ## Features
 
+- **Supports x86 and x64 Assembly**: Easily switch between 32-bit and 64-bit assembly projects.
 - **Great for Bigger Projects**: Automatically assemble all `.asm` files in the `src` directory and all subdirectories.
 - **Debugging**: Full debugging support using MSVC. Set breakpoints, step through code, and inspect registers.
 - **Build Shortcut**: Quickly build your project using build shortcuts (default `Ctrl+Shift+B`).
@@ -18,7 +19,7 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
      - Go to the [Visual Studio 2022 download page](https://visualstudio.microsoft.com/vs/).
      - Download the installer and follow the installation instructions.
 
-   - **Install MASM**:
+   - **Install MASM and MSVC Build Tools**:
      - During the Visual Studio installation, select the "Desktop development with C++" workload. This will install MASM and the necessary MSVC C++ x64/x86 build tools.
 
 2. **Visual Studio Code**:
@@ -54,7 +55,7 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 
 4. **Configure Build Script (If Necessary)**:
 
-   The build script `build.ps1` automatically locates the necessary paths for building your project. However, if your installation paths differ from the defaults, you may need to adjust the user-defined paths at the top of `build.ps1`:
+   The build script `build.ps1` automatically locates the necessary paths for building your project. However, if your installation paths differ from the defaults, or if you want to switch between x86 and x64 assembly, you may need to adjust the variables at the top of `build.ps1`:
 
    - **User-Defined Paths in `build.ps1`**:
 
@@ -76,11 +77,30 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 
      If your machine is 32-bit, change `$hostArch` to `'x86'`. Most modern PCs are 64-bit, so this change is usually unnecessary.
 
-5. **Build the Project**:
+   - **Target Architecture (Switch Between x86 and x64 Assembly)**:
+
+     To switch between building x86 (32-bit) and x64 (64-bit) assembly code, adjust the `$targetArch` variable:
+
+     ```powershell
+     $targetArch = 'x86'  # Change to 'x64' to build 64-bit assembly
+     ```
+
+     - Set `$targetArch` to `'x86'` to build 32-bit assembly code.
+     - Set `$targetArch` to `'x64'` to build 64-bit assembly code.
+
+     After changing this variable, the build script will assemble and link your code for the specified architecture.
+
+5. **Update Your Assembly Code (If Necessary)**:
+
+   - Ensure your assembly code is compatible with the target architecture.
+   - For x64 assembly, you will need to adjust your code to use 64-bit registers and calling conventions.
+   - Update the entry point label in your code if necessary (e.g., `MainEntryPoint` for x64).
+
+6. **Build the Project**:
 
    Use the build shortcut (default `Ctrl+Shift+B`) to assemble and link your project. The build task will execute `build.ps1`. Alternatively, just press `F5` to run the project right away.
 
-6. **Debug and Run the Project**:
+7. **Debug and Run the Project**:
 
    Press `F5` to start debugging. You can set breakpoints, step through code, and inspect registers.
 
@@ -91,36 +111,70 @@ This is a template for creating x86 assembly projects using the MASM assembler. 
 
 ## Example Code
 
-Here's a sample of what your `main.asm` might look like:
+Here's a basic sample of `main.asm` for **x86**:
 
 ```assembly
-.data
-    strPrompt       db "Please enter some text: ", 0
-    strUserInput    db 256 dup(0)
-    strOutputFormat db "You entered: %s", 0Ah, 0
+; x86 Assembly Example
+; INCLUDES - Libraries required for the functionality of the program.
+INCLUDELIB kernel32.lib                     ; Used for ExitProcess
 
-.code
-MainEntryPoint PROC
-    ; Ask the user to enter some text.
-    push offset strPrompt
-    call printf
-    add esp, 4
 
-    ; Get the user's response.
-    push offset strUserInput
-    call gets
-    add esp, 4
+; PROGRAM CONFIGURATION - Defines the processor, memory model, and stack size.
+.386                                        ; Using x86_32 architecture
+.model flat, stdcall
+.stack 4096
 
-    ; Print back what the user typed.
-    push offset strUserInput
-    push offset strOutputFormat
-    call printf
-    add esp, 8
 
-    INVOKE ExitProcess, 0
-MainEntryPoint ENDP
+; FUNCTION PROTOTYPES - Declaration of external functions used in this program.
+ExitProcess PROTO dwExitCode:DWORD
 
-END MainEntryPoint
+
+; DATA SEGMENT - Reserved space for data used in the program.
+.DATA
+
+
+; CODE SEGMENT - Contains the actual code (instructions) of the program.
+.CODE                   
+    MainEntryPoint PROC                     ; Start of main procedure - Entry point of the program
+
+        ; Your code here
+
+        INVOKE ExitProcess, 0
+    MainEntryPoint ENDP                     ; End of main procedure
+
+
+; END OF FILE - Specifies the entry point and marks the end of this source file.
+END MainEntryPoint                          ; End of program, specify the entry point
+
+```
+
+And here's an example for **x64**:
+
+```assembly
+; x64 Assembly Example
+; INCLUDES - Libraries required for the functionality of the program.
+INCLUDELIB kernel32.lib         ; Used for ExitProcess
+
+
+; FUNCTION PROTOTYPES - Declaration of external functions used in this program.
+ExitProcess PROTO
+
+
+; DATA SEGMENT - Reserved space for data used in the program.
+.DATA
+
+
+; CODE SEGMENT - Contains the actual code (instructions) of the program.
+.CODE
+MainEntryPoint PROC             ; Start of main procedure - Entry point of the program
+
+    ; Your code here
+
+    sub rsp, 28h                ; Reserved the stack area as parameter passing area.
+    CALL ExitProcess
+MainEntryPoint ENDP             ; End of the main procedure.
+
+END                             ; End of the Assembly program.
 ```
 
 ## Troubleshooting
@@ -129,8 +183,17 @@ END MainEntryPoint
   - If you encounter errors during the build process, ensure that Visual Studio and the Windows SDK are installed correctly.
   - Verify that the `$visualStudioDir` and `$windowsKitsDir` variables in `build.ps1` match your installation paths if they differ from the defaults.
 
-- **Host Architecture**:
+- **Host and Target Architectures**:
   - Ensure that the `$hostArch` variable in `build.ps1` matches your system architecture (`'x64'` for 64-bit systems, `'x86'` for 32-bit systems).
+  - Set the `$targetArch` variable to the architecture you want to build for (`'x86'` or `'x64'`).
+
+- **Code Compatibility**:
+  - Ensure your assembly code is written for the target architecture.
+  - Adjust registers, calling conventions, and data sizes as necessary for x86 vs. x64.
+
+- **Entry Point Label**:
+  - For x86, if your entry point uses `stdcall`, the linker expects a decorated name (e.g., `MainEntryPoint@0`).
+  - For x64, use the undecorated name (e.g., `MainEntryPoint`).
 
 - **Breakpoints**:
   - Ensure `debug.AllowBreakpointsEverywhere` is set to `true` in your VS Code settings to place breakpoints in the editor.
@@ -138,6 +201,6 @@ END MainEntryPoint
 - **Extensions**:
   - Make sure you have installed the required VS Code extensions: C/C++ extension and ASM Code Lens.
 
-By following these steps and using this template, you can efficiently create and manage your x86 assembly projects in Visual Studio Code.
+By following these steps and using this template, you can efficiently create and manage your x86 and x64 assembly projects in Visual Studio Code.
 
 Happy coding!
