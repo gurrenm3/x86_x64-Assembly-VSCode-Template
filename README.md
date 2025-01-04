@@ -1,6 +1,6 @@
 # x86/x64 Assembly Project Template
 
-This is a template for creating **x86 and x64 assembly projects** using the MASM assembler. It is configured for use with Visual Studio Code and supports building, executing, and debugging your assembly code with ease.
+This is an **ASSEMBLY ONLY** template for creating **x86 and x64 assembly projects** using the MASM assembler. It is configured for use with Visual Studio Code and supports building, executing, and debugging your assembly code with ease.
 
 ## Features
 
